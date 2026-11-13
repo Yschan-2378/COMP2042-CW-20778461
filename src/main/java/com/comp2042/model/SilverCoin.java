@@ -3,6 +3,8 @@ package com.comp2042.model;
 import javafx.scene.image.Image;
 
 public class SilverCoin extends Coin {
+
+    // TODO: This JavaFX View component should eventually be moved to GameView to perfectly satisfy MVC
     private Image image = new Image("resources/views/res/silvercoin.png");
 
     public SilverCoin(int x, int y, Snake snek, Obstacle obstacle) {
@@ -14,7 +16,6 @@ public class SilverCoin extends Coin {
     }
 
     public int getPoints() {
-        int points = 5;
-        return points;
+        return 5;
     }
 }

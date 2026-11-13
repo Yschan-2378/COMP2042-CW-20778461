@@ -2,19 +2,21 @@ package com.comp2042.model;
 
 import javafx.scene.image.Image;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.Random;
 
 public class Coin {
     private Point pos;
+
+    // TODO: This JavaFX View component should eventually be moved to GameView to perfectly satisfy MVC
     private Image image = new Image("resources/views/res/redcoin.png");
 
     public Coin(int x, int y, Snake snek, Obstacle obstacle) {
         int tx;
         int ty;
-        do {
-            Random rnd = new Random();
+        Random rnd = new Random();
 
+        do {
             tx = rnd.nextInt(x);
             ty = rnd.nextInt(y);
             pos = new Point(tx, ty);
@@ -26,8 +28,7 @@ public class Coin {
     }
 
     public int getPoints() {
-        int points = 5;
-        return points;
+        return 5;
     }
 
     public Image getImage() {

@@ -157,7 +157,7 @@ public class GameController {
 
     private void powerCoin() {
         animation.setRate(game.getSpeed());
-        snek.ignoreBorders(false);
+        snek.setIgnoreBorders(false);
         if (coin.getClass().equals(RainbowCoin.class)) {
             RainbowCoin tempCoin = (RainbowCoin) coin;
             animation.setRate(game.getSpeed() + tempCoin.getSpeedBonus());
@@ -166,7 +166,7 @@ public class GameController {
             obstacle.newObstacles(snek, coin, rnd.nextInt(game.getWidth() * game.getHeight()/ 20) +3);
             game.decMaxScore(obstacle.getObstacles().size());
         } else if (coin.getClass().equals(BlueCoin.class)) {
-            snek.ignoreBorders(true);
+            snek.setIgnoreBorders(true);
         }
         game.addPoints(coin.getPoints());
     }
