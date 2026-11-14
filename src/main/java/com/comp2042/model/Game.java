@@ -3,6 +3,8 @@ package com.comp2042.model;
 import javafx.scene.paint.Color;
 
 public class Game {
+
+    // TODO: This JavaFX View component should eventually be moved to GameView to perfectly satisfy MVC
     private Color color = Color.web("feffe4");
     private int width;
     private int height;
@@ -25,11 +27,12 @@ public class Game {
             speed = 13;
             noBorder = false;
         }
+
+        this.width = x;
+        this.height = y;
         this.powerUp = powerUp;
-        width = x;
-        height = y;
-        maxScore = x * y - 2;
-        this.powerUp = powerUp;
+        this.maxScore = (x * y) / 2;
+
         if (height > 50) {
             multiplier = 10;
         } else {

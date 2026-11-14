@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 
 public class Snake {
@@ -18,6 +18,8 @@ public class Snake {
     private boolean ignoreBorders = false;
     private boolean noBorder;
     private Obstacle obstacle;
+
+    // TODO: These JavaFX View components should eventually be moved to GameView to perfectly satisfy MVC
     private Image imgInputHead = new Image("resources/views/res/snakehead.png");
     private ImageView imageHead = new ImageView(imgInputHead);
     private Image imgInputBody = new Image("resources/views/res/snakebody.png");
@@ -135,8 +137,8 @@ public class Snake {
         return dead;
     }
 
-    public void ignoreBorders(boolean ign) {
-        ignoreBorders = ign;
+    public void setIgnoreBorders(boolean ignoreBorders) {
+        this.ignoreBorders = ignoreBorders;
     }
 
     public ImageView getImageViewHead() {
