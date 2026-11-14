@@ -1,14 +1,11 @@
 package com.comp2042.model;
 
-import javafx.scene.paint.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Obstacle {
 
-    // TODO: This JavaFX View component should eventually be moved to GameView to perfectly satisfy MVC
-    private Color color = Color.BLACK;
     private ArrayList<Point> obstacles = new ArrayList<>();
     private int x;
     private int y;
@@ -24,16 +21,12 @@ public class Obstacle {
         }
         Random rnd = new Random();
         Point p;
-        for (int i=0; i<amount; i++) {
+        for (int i = 0; i < amount; i++) {
             do {
                 p = new Point(rnd.nextInt(x) + 1, rnd.nextInt(y));
             } while (coin.getPos().equals(p) || snek.getBody().contains(p) || snek.getHead().equals(p));
             obstacles.add(p);
         }
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public ArrayList<Point> getObstacles() {
