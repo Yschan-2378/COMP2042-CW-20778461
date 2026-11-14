@@ -1,6 +1,13 @@
 package com.comp2042.controller;
 
-import com.comp2042.model.*;
+import com.comp2042.model.BlueCoin;
+import com.comp2042.model.Coin;
+import com.comp2042.model.Game;
+import com.comp2042.model.GoldCoin;
+import com.comp2042.model.Obstacle;
+import com.comp2042.model.RainbowCoin;
+import com.comp2042.model.SilverCoin;
+import com.comp2042.model.Snake;
 import com.comp2042.view.GameView;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -18,19 +25,11 @@ public class GameController {
     private GameView gameView;
     private Game game;
     private Stage stage;
-    private String coinSoundPath = "resources/views/res/coinSound.wav";
     private Obstacle obstacle;
 
-    public static KeyCode key = KeyCode.LEFT;
-    public static KeyCode lastKey = KeyCode.LEFT;
+    private static KeyCode key = KeyCode.LEFT;
+    private static KeyCode lastKey = KeyCode.LEFT;
     private boolean keyPressed = false;
-
-    private int legacyScoreMultiplier = 2;
-
-    private void calculateBonusScore() {
-        int bonus = game.getScorePoints() * legacyScoreMultiplier;
-        System.out.println("Bonus score: " + bonus);
-    }
 
     public GameController(Snake snek, Coin coin, Game game, GameView gameView, Obstacle obstacle, Stage stage) {
         this.snek = snek;
@@ -38,8 +37,8 @@ public class GameController {
         this.gameView = gameView;
         this.game = game;
         this.stage = stage;
-
         this.obstacle = obstacle;
+
         animation.setCycleCount(Animation.INDEFINITE);
         animation.setRate(game.getSpeed());
     }
@@ -63,7 +62,7 @@ public class GameController {
                 powerCoin();
                 game.incScore();
                 if (game.gameWon()) {
-                    gameView.drawGrid(coin, snek, obstacle, gameView.gc, false, 0);
+                    gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
                     return;
                 }
                 newCoin();
@@ -72,7 +71,7 @@ public class GameController {
             keyPressed = false;
 
             if (!snek.getDead() || snek.hitSelf()) {
-                gameView.drawGrid(coin, snek, obstacle, gameView.gc, false, 0);
+                gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
             }
 
             gameView.gameWon();
@@ -97,21 +96,21 @@ public class GameController {
 
         if (event.getCode().equals(KeyCode.TAB)) {
             reset();
-            gameView.scoreLabel.setText("Score: " + game.getScorePoints());
+            gameView.updateScoreLabel();
         }
 
         if (event.getCode().equals(KeyCode.PLUS)) {
             gameView.scaleToFullscreen(true, stage, obstacle, snek, coin);
-            gameView.gameOverLabel.setStyle("-fx-font-size: 50;");
-            gameView.gameWonLabel.setStyle("-fx-font-size: 50;");
-            gameView.scoreLabel.setStyle("-fx-font-size: 35;");
+            gameView.getGameOverLabel().setStyle("-fx-font-size: 50;");
+            gameView.getGameWonLabel().setStyle("-fx-font-size: 50;");
+            gameView.getScoreLabel().setStyle("-fx-font-size: 35;");
         }
 
         if (event.getCode().equals(KeyCode.MINUS)) {
             gameView.scaleToFullscreen(false, stage, obstacle, snek, coin);
-            gameView.gameOverLabel.setStyle("-fx-font-size: 15;");
-            gameView.gameWonLabel.setStyle("-fx-font-size: 15;");
-            gameView.scoreLabel.setStyle("-fx-font-size: 15;");
+            gameView.getGameOverLabel().setStyle("-fx-font-size: 15;");
+            gameView.getGameWonLabel().setStyle("-fx-font-size: 15;");
+            gameView.getScoreLabel().setStyle("-fx-font-size: 15;");
         }
 
         if (event.getCode().equals(KeyCode.ESCAPE)) {
@@ -133,14 +132,11 @@ public class GameController {
     }
 
     private void reset() {
-
         animation.jumpTo(Duration.ZERO);
         animation.stop();
 
         snek = new Snake(game.getWidth(), game.getHeight(), game.isNoBorder(), obstacle);
         coin = new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
-
-        int unusedObstacleCount = new Random().nextInt(game.getWidth() * game.getHeight() / 20) + 3;
 
         animation.setRate(game.getSpeed());
         key = KeyCode.LEFT;
@@ -152,7 +148,7 @@ public class GameController {
         gameView.gameOver(snek);
         gameView.updateScoreLabel();
 
-        gameView.drawGrid(coin, snek, obstacle, gameView.gc, false, 0);
+        gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
     }
 
     private void powerCoin() {
@@ -163,7 +159,7 @@ public class GameController {
             animation.setRate(game.getSpeed() + tempCoin.getSpeedBonus());
         } else if (coin.getClass().equals(SilverCoin.class)){
             Random rnd = new Random();
-            obstacle.newObstacles(snek, coin, rnd.nextInt(game.getWidth() * game.getHeight()/ 20) +3);
+            obstacle.newObstacles(snek, coin, rnd.nextInt(game.getWidth() * game.getHeight() / 20) + 3);
             game.decMaxScore(obstacle.getObstacles().size());
         } else if (coin.getClass().equals(BlueCoin.class)) {
             snek.setIgnoreBorders(true);
@@ -189,5 +185,13 @@ public class GameController {
         } else {
             coin = new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
         }
+    }
+
+    public static KeyCode getKey() {
+        return key;
+    }
+
+    public static KeyCode getLastKey() {
+        return lastKey;
     }
 }

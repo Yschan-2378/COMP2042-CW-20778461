@@ -13,13 +13,8 @@ public class ViewManager {
 
     private Stage primaryStage = new Stage();
     private AnchorPane root;
-
     private Stage gameStage;
-
     private Image snakeLogo = new Image("resources/views/res/SnakeLogoWhite.png");
-
-    public ViewManager() {
-    }
 
     public void initalizeMainMenu() {
         try {
