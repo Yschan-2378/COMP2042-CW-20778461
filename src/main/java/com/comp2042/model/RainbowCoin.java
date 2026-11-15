@@ -8,6 +8,11 @@ public class RainbowCoin extends Coin {
         super(x, y, snek, obstacle, 5);
     }
 
+    @Override
+    public double getSpeedModifier() {
+        return SPEED_BONUS;
+    }
+
     public double getSpeedBonus() {
         return SPEED_BONUS;
     }

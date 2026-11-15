@@ -24,6 +24,14 @@ public class Coin {
         } while (snek.getHead().equals(pos) || snek.getBody().contains(pos) || obstacle.getObstacles().contains(pos));
     }
 
+    public void applyEffect(Game game, Snake snek, Obstacle obstacle) {
+        game.addPoints(points);
+    }
+
+    public double getSpeedModifier() {
+        return 0.0;
+    }
+
     public Point getPos() {
         return new Point(pos);
     }

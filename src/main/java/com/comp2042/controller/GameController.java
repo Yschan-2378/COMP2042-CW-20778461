@@ -1,12 +1,9 @@
 package com.comp2042.controller;
 
-import com.comp2042.model.BlueCoin;
 import com.comp2042.model.Coin;
+import com.comp2042.model.CoinFactory;
 import com.comp2042.model.Game;
-import com.comp2042.model.GoldCoin;
 import com.comp2042.model.Obstacle;
-import com.comp2042.model.RainbowCoin;
-import com.comp2042.model.SilverCoin;
 import com.comp2042.model.Snake;
 import com.comp2042.view.GameView;
 import javafx.animation.Animation;
@@ -16,8 +13,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.Random;
 
 public class GameController {
     private Snake snek;
@@ -152,39 +147,13 @@ public class GameController {
     }
 
     private void powerCoin() {
-        animation.setRate(game.getSpeed());
         snek.setIgnoreBorders(false);
-        if (coin.getClass().equals(RainbowCoin.class)) {
-            RainbowCoin tempCoin = (RainbowCoin) coin;
-            animation.setRate(game.getSpeed() + tempCoin.getSpeedBonus());
-        } else if (coin.getClass().equals(SilverCoin.class)){
-            Random rnd = new Random();
-            obstacle.newObstacles(snek, coin, rnd.nextInt(game.getWidth() * game.getHeight() / 20) + 3);
-            game.decMaxScore(obstacle.getObstacles().size());
-        } else if (coin.getClass().equals(BlueCoin.class)) {
-            snek.setIgnoreBorders(true);
-        }
-        game.addPoints(coin.getPoints());
+        coin.applyEffect(game, snek, obstacle);
+        animation.setRate(game.getSpeed() + coin.getSpeedModifier());
     }
 
     private void newCoin() {
-        if (game.isPowerUp()) {
-            Random rnd = new Random();
-            int ran = rnd.nextInt(12);
-            if (ran == 1) {
-                coin = new GoldCoin(game.getWidth(), game.getHeight(), snek, obstacle);
-            } else if (ran == 2) {
-                coin = new RainbowCoin(game.getWidth(), game.getHeight(), snek, obstacle);
-            } else if (ran == 3) {
-                coin = new BlueCoin(game.getWidth(), game.getHeight(), snek, obstacle);
-            } else if (ran == 4 && obstacle.getObstacles().size() == 0) {
-                coin = new SilverCoin(game.getWidth(), game.getHeight(), snek, obstacle);
-            } else {
-                coin = new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
-            }
-        } else {
-            coin = new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
-        }
+        coin = CoinFactory.createCoin(game, snek, obstacle);
     }
 
     public static KeyCode getKey() {
