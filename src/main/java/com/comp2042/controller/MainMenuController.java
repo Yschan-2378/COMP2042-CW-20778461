@@ -7,35 +7,65 @@ import com.comp2042.model.Obstacle;
 import com.comp2042.model.Snake;
 import com.comp2042.view.GameView;
 import com.comp2042.view.ViewManager;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainMenuController {
 
-    private static final int X_VALUE = 20;
-    private static final int Y_VALUE = 20;
-    private static final boolean POWER_UP = true;
-    private static final char DIFFICULTY = 'N';
+    @FXML private RadioButton diffEasy;
+    @FXML private RadioButton diffNormal;
+    @FXML private RadioButton diffHard;
+
+    @FXML private RadioButton sizeSmall;
+    @FXML private RadioButton sizeMedium;
+    @FXML private RadioButton sizeLarge;
+
+    @FXML private RadioButton powerOn;
+    @FXML private RadioButton powerOff;
+
+    private static int xValue = 20;
+    private static int yValue = 20;
 
     private Scene gameScene;
-
     private ViewManager viewManager = Main.getViewManager();
 
+    @FXML
     public void handleStart() {
-        viewManager.initGameStage();
+        // 1. Determine Difficulty ('E', 'N', or 'H')
+        char difficulty = 'N';
+        if (diffEasy != null && diffEasy.isSelected()) difficulty = 'E';
+        else if (diffHard != null && diffHard.isSelected()) difficulty = 'H';
 
+        // 2. Determine Grid Size
+        xValue = 20;
+        yValue = 20;
+        if (sizeSmall != null && sizeSmall.isSelected()) {
+            xValue = 15;
+            yValue = 15;
+        } else if (sizeLarge != null && sizeLarge.isSelected()) {
+            xValue = 30;
+            yValue = 30;
+        }
+
+        // 3. Determine Power-Ups
+        boolean powerUp = true;
+        if (powerOff != null && powerOff.isSelected()) powerUp = false;
+
+        viewManager.initGameStage();
         Stage gameStage = viewManager.getGameStage();
-        launchSnake(gameStage);
+        launchSnake(gameStage, difficulty, powerUp);
         gameStage.setScene(gameScene);
         viewManager.getPrimaryStage().close();
         gameStage.show();
     }
 
-    private void launchSnake(Stage gameStage) {
-        Game game = new Game(X_VALUE, Y_VALUE, POWER_UP, DIFFICULTY);
+    private void launchSnake(Stage gameStage, char difficulty, boolean powerUp) {
+        Game game = new Game(xValue, yValue, powerUp, difficulty);
         Obstacle obstacle = new Obstacle(game.getWidth(), game.getHeight());
         Snake snek = new Snake(game.getWidth(), game.getHeight(), game.isNoBorder(), obstacle);
         Coin coin = new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
@@ -65,11 +95,6 @@ public class MainMenuController {
         return viewManager;
     }
 
-    public static int getxValue() {
-        return X_VALUE;
-    }
-
-    public static int getyValue() {
-        return Y_VALUE;
-    }
+    public static int getxValue() { return xValue; }
+    public static int getyValue() { return yValue; }
 }
