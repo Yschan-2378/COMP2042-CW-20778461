@@ -1,7 +1,6 @@
 package com.comp2042.view;
 
 import com.comp2042.controller.GameController;
-import com.comp2042.controller.MainMenuController;
 import com.comp2042.model.BlueCoin;
 import com.comp2042.model.Coin;
 import com.comp2042.model.Game;
@@ -59,10 +58,11 @@ public class GameView {
     private double initY;
     private double fullScale = 1;
     private boolean fullsize = false;
-    private int[][] turnArray = new int[MainMenuController.getxValue()][MainMenuController.getyValue()];
+    private int[][] turnArray;
 
     public GameView(Game game) {
         this.game = game;
+        this.turnArray = new int[game.getWidth()][game.getHeight()];
     }
 
     public void makeScene(Scene scene, Snake snek, Coin coin) {
