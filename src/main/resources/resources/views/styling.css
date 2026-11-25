@@ -6,7 +6,19 @@
 }
 
 .root {
-    -fx-background-color: White;
+    -fx-background-color: #1e242b;
+}
+
+.menu-container {
+    -fx-padding: 24;
+}
+
+.settings-card {
+    -fx-background-color: #2b333d;
+    -fx-background-radius: 12;
+    -fx-border-color: #3f4b59;
+    -fx-border-radius: 12;
+    -fx-padding: 18 22 18 22;
 }
 
 .button {
@@ -44,23 +56,63 @@
 
 .label {
     -fx-font-family: "SF Pixelate";
-    -fx-font-size: 35;
+    -fx-font-size: 20;
+    -fx-text-fill: #f4f6f8;
 }
 
 #title {
     -fx-font-family: "SF Pixelate Shaded", bold;
-    -fx-font-size: 40;
+    -fx-font-size: 42;
+    -fx-text-fill: #7bed9f;
+}
+
+#highScoreLabel {
+    -fx-font-family: "SF Pixelate";
+    -fx-font-size: 18;
+    -fx-text-fill: #ffd166;
+}
+
+.option-label {
+    -fx-font-family: "SF Pixelate";
+    -fx-font-size: 16;
+    -fx-text-fill: #a4b0be;
+}
+
+.radio-button {
+    -fx-font-family: "SF Pixelate";
+    -fx-font-size: 15;
+    -fx-text-fill: #ffffff;
+}
+
+.controls-hint {
+    -fx-font-family: "SF Pixelate";
+    -fx-font-size: 13;
+    -fx-text-fill: #9aa5b1;
 }
 
 #gameOverLabel {
     -fx-font-family: "SF Pixelate";
-    -fx-font-size: 30;
+    -fx-font-size: 24;
+    -fx-text-fill: #ff6b6b;
+    -fx-background-color: rgba(30, 36, 43, 0.85);
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
 }
+
 #gameWonLabel {
     -fx-font-family: "SF Pixelate";
-    -fx-font-size: 30;
+    -fx-font-size: 24;
+    -fx-text-fill: #7bed9f;
+    -fx-background-color: rgba(30, 36, 43, 0.85);
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
 }
+
 #scoreLabel {
     -fx-font-family: "SF Pixelate";
-    -fx-font-size: 20;
+    -fx-font-size: 17;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(30, 36, 43, 0.78);
+    -fx-background-radius: 8;
+    -fx-padding: 5 14 5 14;
 }

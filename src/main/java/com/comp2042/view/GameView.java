@@ -1,14 +1,15 @@
 package com.comp2042.view;
 
-import com.comp2042.model.PortalCoin;
-import com.comp2042.model.PortalPair;
 import com.comp2042.controller.GameController;
 import com.comp2042.controller.MainMenuController;
 import com.comp2042.model.BlueCoin;
 import com.comp2042.model.Coin;
 import com.comp2042.model.Game;
 import com.comp2042.model.GoldCoin;
+import com.comp2042.model.HighScoreManager;
 import com.comp2042.model.Obstacle;
+import com.comp2042.model.PortalCoin;
+import com.comp2042.model.PortalPair;
 import com.comp2042.model.RainbowCoin;
 import com.comp2042.model.SilverCoin;
 import com.comp2042.model.Snake;
@@ -29,8 +30,9 @@ import java.awt.Point;
 
 public class GameView {
 
-    private static final Color BOARD_COLOR = Color.web("feffe4");
-    private static final Color OBSTACLE_COLOR = Color.BLACK;
+    private static final Color BOARD_LIGHT = Color.web("feffe4");
+    private static final Color BOARD_DARK = Color.web("f3f5d0");
+    private static final Color OBSTACLE_COLOR = Color.web("222831");
 
     private final Image redCoinImage = new Image("resources/views/res/redcoin.png");
     private final Image blueCoinImage = new Image("resources/views/res/bluecoin.png");
@@ -70,21 +72,22 @@ public class GameView {
         gc = gridCanvas.getGraphicsContext2D();
         drawGrid(coin, snek, gc);
 
-        gameOverLabel = new Label("GAME OVER");
-        gameOverLabel.setId("gameOverLabel");
         String css = "resources/views/styling.css";
+
+        gameOverLabel = new Label("GAME OVER  (TAB to Retry)");
+        gameOverLabel.setId("gameOverLabel");
         gameOverLabel.getStylesheets().add(css);
         gameOverLabel.setVisible(false);
 
-        gameWonLabel = new Label("YOU WON!");
+        gameWonLabel = new Label("YOU WON!  (TAB to Replay)");
         gameWonLabel.setId("gameWonLabel");
         gameWonLabel.getStylesheets().add(css);
         gameWonLabel.setVisible(false);
 
-        scoreLabel = new Label("Score: " + game.getScorePoints());
+        scoreLabel = new Label();
         scoreLabel.setId("scoreLabel");
         scoreLabel.getStylesheets().add(css);
-        scoreLabel.setFont(new Font("Arial", 20));
+        updateScoreLabel();
         scoreLabel.setVisible(true);
     }
 
@@ -95,11 +98,7 @@ public class GameView {
         double yScaling = Screen.getPrimary().getVisualBounds().getWidth() / initX;
 
         if (fullScreen && !fullsize) {
-            if (xScaling < yScaling) {
-                fullScale = xScaling;
-            } else {
-                fullScale = yScaling;
-            }
+            fullScale = Math.min(xScaling, yScaling);
             gridCanvas.setWidth(gridCanvas.getWidth() * fullScale);
             gridCanvas.setHeight(gridCanvas.getHeight() * fullScale);
             fullsize = true;
@@ -128,28 +127,44 @@ public class GameView {
         return redCoinImage;
     }
 
-    public void drawGrid(Coin coin, Snake snek, Obstacle obstacle, GraphicsContext gc) {
-        gc.setFill(BOARD_COLOR);
-        gc.fillRect(0, 0, gridCanvas.getWidth(), gridCanvas.getHeight());
-
-        gc.drawImage(getCoinImage(coin), (coin.getPos().x * game.getMultiplier()) * fullScale, (coin.getPos().y * game.getMultiplier()) * fullScale, game.getMultiplier() * fullScale + 3 * fullScale, game.getMultiplier() * fullScale + 3 * fullScale);
-
-        if (coin instanceof PortalCoin) {
-            gc.setStroke(Color.MEDIUMPURPLE);
-            gc.setLineWidth(3 * fullScale);
-            gc.strokeOval((coin.getPos().x * game.getMultiplier()) * fullScale, (coin.getPos().y * game.getMultiplier()) * fullScale, game.getMultiplier() * fullScale, game.getMultiplier() * fullScale);
+    private void drawBoardBackground(GraphicsContext gc) {
+        double tile = game.getMultiplier() * fullScale;
+        for (int gx = 0; gx < game.getWidth(); gx++) {
+            for (int gy = 0; gy < game.getHeight(); gy++) {
+                gc.setFill((gx + gy) % 2 == 0 ? BOARD_LIGHT : BOARD_DARK);
+                gc.fillRect(gx * tile, gy * tile, tile, tile);
+            }
         }
+    }
+
+    private void drawPortalRing(GraphicsContext gc, Point p, Color outerColor, Color innerColor, double tile) {
+        double px = p.x * tile;
+        double py = p.y * tile;
+        gc.setStroke(outerColor);
+        gc.setLineWidth(3.5 * fullScale);
+        gc.strokeOval(px + 1 * fullScale, py + 1 * fullScale, tile - 2 * fullScale, tile - 2 * fullScale);
+
+        gc.setStroke(innerColor);
+        gc.setLineWidth(1.8 * fullScale);
+        gc.strokeOval(px + 4 * fullScale, py + 4 * fullScale, tile - 8 * fullScale, tile - 8 * fullScale);
+    }
+
+    public void drawGrid(Coin coin, Snake snek, Obstacle obstacle, GraphicsContext gc) {
+        double tile = game.getMultiplier() * fullScale;
+        drawBoardBackground(gc);
 
         PortalPair portals = game.getPortalPair();
         if (portals != null && portals.isActive()) {
-            double size = game.getMultiplier() * fullScale;
-            gc.setLineWidth(3 * fullScale);
+            drawPortalRing(gc, portals.getPortalA(), Color.DODGERBLUE, Color.LIGHTSKYBLUE, tile);
+            drawPortalRing(gc, portals.getPortalB(), Color.DARKORANGE, Color.GOLD, tile);
+        }
 
-            gc.setStroke(Color.DODGERBLUE);
-            gc.strokeOval(portals.getPortalA().x * size, portals.getPortalA().y * size, size, size);
+        gc.drawImage(getCoinImage(coin), (coin.getPos().x * game.getMultiplier()) * fullScale,
+                (coin.getPos().y * game.getMultiplier()) * fullScale,
+                tile + 3 * fullScale, tile + 3 * fullScale);
 
-            gc.setStroke(Color.DARKORANGE);
-            gc.strokeOval(portals.getPortalB().x * size, portals.getPortalB().y * size, size, size);
+        if (coin instanceof PortalCoin) {
+            drawPortalRing(gc, coin.getPos(), Color.MEDIUMPURPLE, Color.PLUM, tile);
         }
 
         int bodyIndex = 0;
@@ -162,15 +177,17 @@ public class GameView {
 
         gc.setFill(OBSTACLE_COLOR);
         for (Point point : obstacle.getObstacles()) {
-            gc.fillRect(point.x * game.getMultiplier() * fullScale, point.y * game.getMultiplier() * fullScale, game.getMultiplier() * fullScale, game.getMultiplier() * fullScale);
+            gc.fillRoundRect(point.x * tile + 1, point.y * tile + 1, tile - 2, tile - 2, 4 * fullScale, 4 * fullScale);
         }
     }
 
     private void drawGrid(Coin coin, Snake snek, GraphicsContext gc) {
-        gc.setFill(BOARD_COLOR);
-        gc.fillRect(0, 0, gridCanvas.getWidth(), gridCanvas.getHeight());
+        double tile = game.getMultiplier() * fullScale;
+        drawBoardBackground(gc);
 
-        gc.drawImage(getCoinImage(coin), (coin.getPos().x * game.getMultiplier()) * fullScale, (coin.getPos().y * game.getMultiplier()) * fullScale, game.getMultiplier() * fullScale + 3 * fullScale, game.getMultiplier() * fullScale + 3 * fullScale);
+        gc.drawImage(getCoinImage(coin), (coin.getPos().x * game.getMultiplier()) * fullScale,
+                (coin.getPos().y * game.getMultiplier()) * fullScale,
+                tile + 3 * fullScale, tile + 3 * fullScale);
 
         int bodyIndex = 0;
         for (Point point : snek.getBody()) {
@@ -239,7 +256,13 @@ public class GameView {
             turnArray[(int) snek.getHead().getX()][(int) snek.getHead().getY()] = 1;
         } else if ((GameController.getLastKey() == KeyCode.UP && GameController.getKey() == KeyCode.LEFT) || (GameController.getLastKey() == KeyCode.RIGHT && GameController.getKey() == KeyCode.DOWN)) {
             turnArray[(int) snek.getHead().getX()][(int) snek.getHead().getY()] = 4;
-        } else turnArray[(int) snek.getHead().getX()][(int) snek.getHead().getY()] = 0;
+        } else {
+            turnArray[(int) snek.getHead().getX()][(int) snek.getHead().getY()] = 0;
+        }
+    }
+
+    public void clearTurns() {
+        turnArray = new int[game.getWidth()][game.getHeight()];
     }
 
     public void gameOver(Snake snek) {
@@ -263,7 +286,8 @@ public class GameView {
     }
 
     public void updateScoreLabel() {
-        scoreLabel.setText("Score: " + game.getScorePoints());
+        scoreLabel.setText("Score: " + game.getScorePoints()
+                + "   |   Best: " + HighScoreManager.getInstance().getHighScore());
     }
 
     public Canvas getGridCanvas() {
