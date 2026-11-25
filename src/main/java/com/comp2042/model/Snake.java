@@ -117,6 +117,10 @@ public class Snake {
         this.ignoreBorders = ignoreBorders;
     }
 
+    public void teleportTo(Point destination) {
+        this.head.setLocation(destination);
+    }
+
     public int getSnakeDir() {
         return snakeDir;
     }

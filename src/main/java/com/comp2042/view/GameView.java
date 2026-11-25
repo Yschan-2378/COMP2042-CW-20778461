@@ -1,5 +1,7 @@
 package com.comp2042.view;
 
+import com.comp2042.model.PortalCoin;
+import com.comp2042.model.PortalPair;
 import com.comp2042.controller.GameController;
 import com.comp2042.controller.MainMenuController;
 import com.comp2042.model.BlueCoin;
@@ -131,6 +133,24 @@ public class GameView {
         gc.fillRect(0, 0, gridCanvas.getWidth(), gridCanvas.getHeight());
 
         gc.drawImage(getCoinImage(coin), (coin.getPos().x * game.getMultiplier()) * fullScale, (coin.getPos().y * game.getMultiplier()) * fullScale, game.getMultiplier() * fullScale + 3 * fullScale, game.getMultiplier() * fullScale + 3 * fullScale);
+
+        if (coin instanceof PortalCoin) {
+            gc.setStroke(Color.MEDIUMPURPLE);
+            gc.setLineWidth(3 * fullScale);
+            gc.strokeOval((coin.getPos().x * game.getMultiplier()) * fullScale, (coin.getPos().y * game.getMultiplier()) * fullScale, game.getMultiplier() * fullScale, game.getMultiplier() * fullScale);
+        }
+
+        PortalPair portals = game.getPortalPair();
+        if (portals != null && portals.isActive()) {
+            double size = game.getMultiplier() * fullScale;
+            gc.setLineWidth(3 * fullScale);
+
+            gc.setStroke(Color.DODGERBLUE);
+            gc.strokeOval(portals.getPortalA().x * size, portals.getPortalA().y * size, size, size);
+
+            gc.setStroke(Color.DARKORANGE);
+            gc.strokeOval(portals.getPortalB().x * size, portals.getPortalB().y * size, size, size);
+        }
 
         int bodyIndex = 0;
         for (Point point : snek.getBody()) {

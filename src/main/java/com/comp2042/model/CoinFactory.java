@@ -14,7 +14,7 @@ public class CoinFactory {
             return new Coin(game.getWidth(), game.getHeight(), snek, obstacle);
         }
 
-        int roll = RANDOM.nextInt(12);
+        int roll = RANDOM.nextInt(10);
         return createCoinByRoll(roll, game.getWidth(), game.getHeight(), snek, obstacle);
     }
 
@@ -31,6 +31,9 @@ public class CoinFactory {
                     return new SilverCoin(width, height, snek, obstacle);
                 }
                 return new Coin(width, height, snek, obstacle);
+            case 5:
+            case 6:
+                return new PortalCoin(width, height, snek, obstacle);
             default:
                 return new Coin(width, height, snek, obstacle);
         }

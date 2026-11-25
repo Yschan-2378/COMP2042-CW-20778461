@@ -11,6 +11,7 @@ public class Game {
     private double speed;
     private boolean powerUp;
     private boolean noBorder;
+    private final PortalPair portalPair;
 
     public Game(int x, int y, boolean powerUp, char difficulty) {
         if (difficulty == 'E') {
@@ -28,6 +29,7 @@ public class Game {
         this.height = y;
         this.powerUp = powerUp;
         this.maxScore = (x * y) / 2;
+        this.portalPair = new PortalPair(x, y);
 
         if (height > 50) {
             multiplier = 10;
@@ -83,5 +85,9 @@ public class Game {
 
     public boolean isNoBorder() {
         return noBorder;
+    }
+
+    public PortalPair getPortalPair() {
+        return portalPair;
     }
 }
