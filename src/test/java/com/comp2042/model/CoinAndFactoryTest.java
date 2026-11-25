@@ -65,8 +65,8 @@ class CoinAndFactoryTest {
 
         SilverCoin silverCoin = new SilverCoin(20, 20, snake, obstacle);
         silverCoin.applyEffect(game, snake, obstacle);
-        assertEquals(25, game.getScorePoints());
-        assertTrue(obstacle.getObstacles().size() >= 3);
+        assertEquals(30, game.getScorePoints());
+        assertTrue(obstacle.getObstacles().size() >= 3 && obstacle.getObstacles().size() <= 5);
     }
 
     @Test

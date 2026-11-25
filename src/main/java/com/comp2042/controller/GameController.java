@@ -53,6 +53,13 @@ public class GameController {
                 snek.move('D');
             }
 
+            if (!snek.getDead()) {
+                java.awt.Point portalExit = game.getPortalPair().getExitIfEntered(snek.getHead());
+                if (portalExit != null) {
+                    snek.teleportTo(portalExit);
+                }
+            }
+
             if (!snek.getDead() && snek.ateCoin(coin)) {
                 powerCoin();
                 game.incScore();
@@ -139,6 +146,7 @@ public class GameController {
         game.resetScore();
         obstacle.reset();
 
+        game.getPortalPair().reset();
         gameView.gameWon();
         gameView.gameOver(snek);
         gameView.updateScoreLabel();
