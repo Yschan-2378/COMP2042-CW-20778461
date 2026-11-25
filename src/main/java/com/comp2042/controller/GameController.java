@@ -1,5 +1,6 @@
 package com.comp2042.controller;
 
+import com.comp2042.Main;
 import com.comp2042.model.Coin;
 import com.comp2042.model.CoinFactory;
 import com.comp2042.model.Game;
@@ -36,6 +37,9 @@ public class GameController {
         this.game = game;
         this.stage = stage;
         this.obstacle = obstacle;
+
+        key = KeyCode.LEFT;
+        lastKey = KeyCode.LEFT;
 
         animation.setCycleCount(Animation.INDEFINITE);
         animation.setRate(game.getSpeed());
@@ -125,9 +129,8 @@ public class GameController {
 
         if (event.getCode().equals(KeyCode.ESCAPE)) {
             animation.stop();
-            MainMenuController mainMenuController = new MainMenuController();
-            mainMenuController.getViewManager().initalizeMainMenu();
-            mainMenuController.getViewManager().getGameStage().close();
+            Main.getViewManager().initalizeMainMenu();
+            Main.getViewManager().getGameStage().close();
         }
     }
 
