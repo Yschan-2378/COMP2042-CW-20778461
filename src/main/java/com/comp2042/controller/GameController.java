@@ -3,6 +3,7 @@ package com.comp2042.controller;
 import com.comp2042.model.Coin;
 import com.comp2042.model.CoinFactory;
 import com.comp2042.model.Game;
+import com.comp2042.model.HighScoreManager;
 import com.comp2042.model.Obstacle;
 import com.comp2042.model.Snake;
 import com.comp2042.view.GameView;
@@ -13,6 +14,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.awt.Point;
 
 public class GameController {
     private Snake snek;
@@ -41,49 +44,54 @@ public class GameController {
     private final Timeline animation = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
         if (snek.getDead()) {
             return;
-        } else {
-
-            if (key.equals(KeyCode.LEFT)) {
-                snek.move('L');
-            } else if (key.equals(KeyCode.RIGHT)) {
-                snek.move('R');
-            } else if (key.equals(KeyCode.UP)) {
-                snek.move('U');
-            } else if (key.equals(KeyCode.DOWN)) {
-                snek.move('D');
-            }
-
-            if (!snek.getDead()) {
-                java.awt.Point portalExit = game.getPortalPair().getExitIfEntered(snek.getHead());
-                if (portalExit != null) {
-                    snek.teleportTo(portalExit);
-                }
-            }
-
-            if (!snek.getDead() && snek.ateCoin(coin)) {
-                powerCoin();
-                game.incScore();
-                if (game.gameWon()) {
-                    gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
-                    return;
-                }
-                newCoin();
-            }
-
-            keyPressed = false;
-
-            if (!snek.getDead() || snek.hitSelf()) {
-                gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
-            }
-
-            gameView.gameWon();
-            gameView.gameOver(snek);
-            gameView.updateScoreLabel();
         }
+
+        if (key.equals(KeyCode.LEFT)) {
+            snek.move('L');
+        } else if (key.equals(KeyCode.RIGHT)) {
+            snek.move('R');
+        } else if (key.equals(KeyCode.UP)) {
+            snek.move('U');
+        } else if (key.equals(KeyCode.DOWN)) {
+            snek.move('D');
+        }
+
+        if (!snek.getDead()) {
+            Point portalExit = game.getPortalPair().getExitIfEntered(snek.getHead());
+            if (portalExit != null) {
+                snek.teleportTo(portalExit);
+            }
+        }
+
+        if (!snek.getDead() && snek.ateCoin(coin)) {
+            powerCoin();
+            game.incScore();
+            HighScoreManager.getInstance().updateHighScore(game.getScorePoints());
+            if (game.gameWon()) {
+                this.animation.stop();
+                gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
+                gameView.gameWon();
+                gameView.updateScoreLabel();
+                return;
+            }
+            newCoin();
+        }
+
+        keyPressed = false;
+
+        if (!snek.getDead() || snek.hitSelf()) {
+            gameView.drawGrid(coin, snek, obstacle, gameView.getGc());
+        }
+
+        gameView.gameWon();
+        gameView.gameOver(snek);
+        gameView.updateScoreLabel();
     }));
 
     public void handle(KeyEvent event) {
-        if (event.getCode().isArrowKey()) animation.play();
+        if (event.getCode().isArrowKey() && !game.gameWon()) {
+            animation.play();
+        }
 
         if (valKey(event.getCode()) && !keyPressed) {
             lastKey = key;
@@ -116,21 +124,20 @@ public class GameController {
         }
 
         if (event.getCode().equals(KeyCode.ESCAPE)) {
+            animation.stop();
             MainMenuController mainMenuController = new MainMenuController();
-            mainMenuController.getViewManager().getPrimaryStage().show();
+            mainMenuController.getViewManager().initalizeMainMenu();
             mainMenuController.getViewManager().getGameStage().close();
         }
     }
 
     private boolean valKey(KeyCode key) {
         if (!key.isArrowKey()) return false;
-        else {
-            if (key.equals(KeyCode.LEFT)) if (!this.key.equals(KeyCode.RIGHT)) return true;
-            if (key.equals(KeyCode.RIGHT)) if (!this.key.equals(KeyCode.LEFT)) return true;
-            if (key.equals(KeyCode.DOWN)) if (!this.key.equals(KeyCode.UP)) return true;
-            if (key.equals(KeyCode.UP)) return !this.key.equals(KeyCode.DOWN);
-            return false;
-        }
+        if (key.equals(KeyCode.LEFT)) return !GameController.key.equals(KeyCode.RIGHT);
+        if (key.equals(KeyCode.RIGHT)) return !GameController.key.equals(KeyCode.LEFT);
+        if (key.equals(KeyCode.DOWN)) return !GameController.key.equals(KeyCode.UP);
+        if (key.equals(KeyCode.UP)) return !GameController.key.equals(KeyCode.DOWN);
+        return false;
     }
 
     private void reset() {
@@ -145,8 +152,8 @@ public class GameController {
         keyPressed = false;
         game.resetScore();
         obstacle.reset();
-
         game.getPortalPair().reset();
+        gameView.clearTurns();
         gameView.gameWon();
         gameView.gameOver(snek);
         gameView.updateScoreLabel();

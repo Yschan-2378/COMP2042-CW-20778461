@@ -1,5 +1,7 @@
 package com.comp2042.controller;
 
+import com.comp2042.model.HighScoreManager;
+import javafx.scene.control.Label;
 import com.comp2042.Main;
 import com.comp2042.model.Coin;
 import com.comp2042.model.Game;
@@ -16,7 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainMenuController {
-
+    @FXML private Label highScoreLabel;
     @FXML private RadioButton diffEasy;
     @FXML private RadioButton diffNormal;
     @FXML private RadioButton diffHard;
@@ -33,6 +35,14 @@ public class MainMenuController {
 
     private Scene gameScene;
     private ViewManager viewManager = Main.getViewManager();
+
+
+    @FXML
+    public void initialize() {
+        if (highScoreLabel != null) {
+            highScoreLabel.setText("Best Score: " + HighScoreManager.getInstance().getHighScore());
+        }
+    }
 
     @FXML
     public void handleStart() {
